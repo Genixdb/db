@@ -2,17 +2,45 @@ import time
 import json
 import os
 import threading
-# MTE0NDgwNzY3MzM4OTM4Mzc0MA.GiJ4nr.7ECr3Bzg6S3HkldVjRZroNmgkIfo8rW480OjQo
-# MTE0MzQ0Nzc1ODYyMDA2OTkzOQ.Gc6tvM.bFnixhrYgfN6RpxLA2FYyXssYNZnjDnUkvBGbI
+
 try:
 	from pystyle import Colors, Colorate, Box
 	import discord
 	from discord.ext import commands
 	import requests
+	from capmonster_python import HCaptchaTask
 except ImportError:
 	os.system("pip install requests")
 	os.system("pip install pystyle")
 	os.system("pip install discord")
+	
+def headers_reg():
+    response1 = requests.get("https://discord.com")
+    cookie = response1.cookies.get_dict()
+    cookie['locale'] = "us"
+    __dcfduid = cookie['__dcfduid']
+    __sdcfduid = cookie['__sdcfduid']
+    __cfruid = cookie['__cfruid']
+    headers = {
+           "accept": "*/*",
+           "authority": "discord.com",
+           "method": "POST",
+           "path": "/api/v9/auth/register",
+           "scheme": "https",
+           "origin": "discord.com",
+           "referer": "discord.com/register",
+           "x-debug-options": "bugReporterEnabled",
+           "accept-language": "en-US,en;q=0.9",
+           "connection": "keep-alive",
+           "content-Type": "application/json",
+           "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9003 Chrome/91.0.4472.164 Electron/13.4.0 Safari/537.36",
+           "x-super-properties": "eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiRGlzY29yZCBDbGllbnQiLCJyZWxlYXNlX2NoYW5uZWwiOiJzdGFibGUiLCJjbGllbnRfdmVyc2lvbiI6IjEuMC45MDAzIiwib3NfdmVyc2lvbiI6IjEwLjAuMjIwMDAiLCJvc19hcmNoIjoieDY0Iiwic3lzdGVtX2xvY2FsZSI6ImVuLVVTIiwiY2xpZW50X2J1aWxkX251bWJlciI6MTA0OTY3LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ==",
+           "sec-fetch-dest": "empty",
+           "sec-fetch-mode": "cors",
+           "sec-fetch-site": "same-origin",
+           "cookie": f"__dcfduid={__dcfduid};__sdcfduid={__sdcfduid};_gcl_au=1.1.112584149.1686070530;OptanonConsent=isIABGlobal=false&datestamp=Tue+Jun+06+2023+23%3A55%3A30+GMT%2B0700+(%E0%B9%80%E0%B8%A7%E0%B8%A5%E0%B8%B2%E0%B8%AD%E0%B8%B4%E0%B8%99%E0%B9%82%E0%B8%94%E0%B8%88%E0%B8%B5%E0%B8%99)&version=6.33.0&hosts=&landingPath=https%3A%2F%2Fdiscord.com%2FADJqYCUD&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1;_ga=GA1.1.1610756780.1686070537;_ga_Q149DFWHT7=GS1.1.1686070536.1.0.1686070539.0.0.0;__cf_bm=btpRH4vTOEcwikDHB0QBu404QuPhOivnK86ngimpulA-1686711134-0-ATfCY3ZxHGCsLUjU9HVNEX3RRk45FFeLwMkv5r21pc1VyYri80f0okPZqwv5f9aPDA==;__cfruid={__cfruid}"
+    }
+    return headers
 	
 def genixshop(token,guild,na):
 	res = requests.post(f"https://discord.com/api/v9/guilds/{guild}/channels",headers={"authorization": token},json={"type":0,"name":na,"permission_overwrites":[]})
@@ -43,7 +71,23 @@ def genixshop2(token,guild,na):
 		print(Colorate.Horizontal(Colors.rainbow, f"               [-] RalteLimited For {tim} !"))
 	else:
 		print(res,res.json())
-	
+		
+def request_fingerprint():
+	response2 = requests.get("https://discordapp.com/api/v9/experiments", headers=headers_reg()).json()
+	fingerprint = response2["fingerprint"]
+	return fingerprint
+		
+def hcaptcha():
+	try:
+		capmonster = HCaptchaTask("bfc4a11b875c449929055ac3a3abc88c")
+		task_id = capmonster.create_task("https://discord.com", "f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34")
+		result = capmonster.join_task_result(task_id)
+		return result.get("gRecaptchaResponse")
+	except:
+		print(Colorate.Horizontal(Colors.rainbow, f"               [-] Please check the information and try again !"))
+		time.sleep(2)
+		homepage()
+		
 def token_checker(tokens):
 	headers = {
 		"authorization": tokens
@@ -113,6 +157,8 @@ def clientattack():
 	print(Colorate.Horizontal(Colors.yellow_to_red, "                      MODE TYPE : CLIENT ATTACK"))
 	print()
 	print(Colorate.Horizontal(Colors.yellow_to_red, "    [#] Please select the option you want : "))
+	print()
+	print(Colorate.Diagonal(Colors.rainbow, "                          [G] GET YOUR TOKENS       "))
 	print()
 	print(Colorate.Diagonal(Colors.rainbow, "       [1] DELETE CHANNELS           [7] CHANGE SERVER ( AUTOMATICH )"))
 	print(Colorate.Diagonal(Colors.rainbow, "       [2] CREATE CHANNELS           [8] MEMBERS SERVER BAN ALL"))
@@ -192,6 +238,32 @@ def clientattack():
 				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
 				time.sleep(2)
 				clientattack()
+				
+	elif select == "g" or select == "G":
+		print()
+		username = input(Colorate.Horizontal(Colors.green_to_cyan, "         USERNAME : "))
+		password = input(Colorate.Horizontal(Colors.green_to_cyan, "         PASSWORD : "))
+		print()
+		
+		if (username == "" or password == ""):
+			clientattack()
+		else:
+			headers = {
+				"x-fingerprint": request_fingerprint(),
+				"user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Mobile Safari/537.36",
+				"content-type": "application/json"
+			}
+			response2 = requests.post("https://discord.com/api/v9/auth/login",headers=headers,json={"login":username,"password":password,"undelete":False,"login_source":None,"gift_code_sku_id":None,"captcha_key": hcaptcha()})
+			if response2.status_code == 400:
+				print(Colorate.Horizontal(Colors.rainbow, f"               [-] Username or Password Wrong !"))
+				time.sleep(2)
+				clientattack()
+			elif response2.status_code == 200:
+				tokens = response.json()['token']
+				print(Colorate.Horizontal(Colors.rainbow, f"               [+] {tokens}"))
+			else:
+				print(response2,response2.json())
+				
 		
 	elif select == "3" or select == "03":
 		print()
