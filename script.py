@@ -12,7 +12,7 @@ try:
 except ImportError:
 	os.system("pip install requests")
 	os.system("pip install pystyle")
-	os.system("pip install discord")
+	os.system("pip install discord"); os.system("pip install capmonster_python")
 	
 def headers_reg():
     response1 = requests.get("https://discord.com")
@@ -261,6 +261,9 @@ def clientattack():
 			elif response2.status_code == 200:
 				tokens = response.json()['token']
 				print(Colorate.Horizontal(Colors.rainbow, f"               [+] {tokens}"))
+				print("\n")
+				input(Colorate.Horizontal(Colors.rainbow, f"                   PLEASE ENTER TO HOME..."))
+				clientattack()
 			else:
 				print(response2,response2.json())
 				
