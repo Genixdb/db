@@ -2,7 +2,8 @@ import time
 import json
 import os
 import threading
-
+# MTE0NDgwNzY3MzM4OTM4Mzc0MA.GiJ4nr.7ECr3Bzg6S3HkldVjRZroNmgkIfo8rW480OjQo
+# MTE0MzQ0Nzc1ODYyMDA2OTkzOQ.Gc6tvM.bFnixhrYgfN6RpxLA2FYyXssYNZnjDnUkvBGbI
 try:
 	from pystyle import Colors, Colorate, Box
 	import discord
@@ -199,7 +200,7 @@ def clientattack():
 		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
 		msg = input(Colorate.Horizontal(Colors.green_to_cyan, "         MESSAGE : "))
 		type = input(Colorate.Horizontal(Colors.green_to_cyan, "         Do you want to send to all channels? (yes,no) : "))
-		if type == "Yes" or type == "yes" or type == "Y" or "y":
+		if (type == "Yes" or type == "yes" or type == "Y" or type == "y"):
 			try:
 				num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
 				print()
@@ -239,8 +240,27 @@ def clientattack():
 				time.sleep(2)
 				clientattack()
 		else:
+			ch = input(Colorate.Horizontal(Colors.green_to_cyan, "         CHANNEL ID : "))
 			try:
 				num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
+				print()
+				
+				def toks(chann,content):
+					response = requests.post(f"https://discord.com/api/v9/channels/{chann}/messages",headers={"authorization": token},json={"content": content})
+					if response.status_code == 200:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [+] Sent to Channels - {ch} Done"))
+					elif response.status_code == 429:
+						re = response.json()['retry_after']
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] RateLimited For - {re}"), end="\r")
+						time.sleep(float(re))
+					else:
+						print(response.json(),response)
+						
+				for i in range(num):
+					threading.Thread(target=toks, args=[ch,msg]).start()
+				
+				time.sleep(3)
+				clientattack()
 			except:
 				print()
 				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
