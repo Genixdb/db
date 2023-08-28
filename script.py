@@ -2,6 +2,7 @@ import time
 import json
 import os
 import threading
+import random
 
 try:
 	from pystyle import Colors, Colorate, Box
@@ -12,7 +13,7 @@ try:
 except ImportError:
 	os.system("pip install requests")
 	os.system("pip install pystyle")
-	os.system("pip install discord"); os.system("pip install capmonster_python")
+	os.system("pip install discord")
 	
 def headers_reg():
     response1 = requests.get("https://discord.com")
@@ -259,7 +260,7 @@ def clientattack():
 				time.sleep(2)
 				clientattack()
 			elif response2.status_code == 200:
-				tokens = response.json()['token']
+				tokens = response2.json()['token']
 				print(Colorate.Horizontal(Colors.rainbow, f"               [+] {tokens}"))
 				print("\n")
 				input(Colorate.Horizontal(Colors.rainbow, f"                   PLEASE ENTER TO HOME..."))
@@ -341,6 +342,75 @@ def clientattack():
 				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
 				time.sleep(2)
 				clientattack()
+	elif select == "4" or select == "04":
+		print()
+		token = input(Colorate.Horizontal(Colors.green_to_cyan, "         TOKEN : "))
+		token_checker(token)
+		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
+		type = input(Colorate.Horizontal(Colors.green_to_cyan, "         Do you want auto change? (yes,no) : "))
+		
+		if type == "Yes" or type == "yes" or type == "Y" or type == "y":
+			try:
+				num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
+				
+				print()
+				
+				def change(serverID,tokens,n):
+					response = requests.patch(f"https://discord.com/api/v9/guilds/{serverID}",headers={"authorization": tokens},json={"name":n,"description":None,"icon":None,"splash":None,"banner":None,"home_header":None,"afk_channel_id":None,"afk_timeout":300,"system_channel_id":None,"verification_level":0,"default_message_notifications":0,"explicit_content_filter":0,"system_channel_flags":0,"public_updates_channel_id":None,"safety_alerts_channel_id":None,"premium_progress_bar_enabled":False})
+					if response.status_code == 400:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] Your information is incorrect !"), end="\r")
+					elif response.status_code == 403:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] Could not find this server !"), end="\r")
+					elif response.status_code == 200:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [+] Change - {guild} Successfully !"))
+					elif response.status_code == 429:
+						re = response.json()['retry_after']
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] RateLimited For - {re}"), end="\r")
+						time.sleep(float(re))
+					else:
+						print(response,response.json())
+				
+				for i in range(num):
+					u = random.randint(10000000,99999999)
+					name = f"GENIX SHOP | {u}"
+					threading.Thread(target=change, args=[guild,token,name]).start()
+				time.sleep(3)
+				clientattack()
+			except:
+				print()
+				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
+				time.sleep(2)
+				clientattack()
+		else:
+			try:
+				name = input(Colorate.Horizontal(Colors.green_to_cyan, "         NICKNAME : "))
+				
+				print()
+				
+				def change(serverID,tokens,n):
+					response = requests.patch(f"https://discord.com/api/v9/guilds/{serverID}",headers={"authorization": tokens},json={"name":n,"description":None,"icon":None,"splash":None,"banner":None,"home_header":None,"afk_channel_id":None,"afk_timeout":300,"system_channel_id":None,"verification_level":0,"default_message_notifications":0,"explicit_content_filter":0,"system_channel_flags":0,"public_updates_channel_id":None,"safety_alerts_channel_id":None,"premium_progress_bar_enabled":False})
+					if response.status_code == 400:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] Your information is incorrect !"), end="\r")
+					elif response.status_code == 403:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] Could not find this server !"), end="\r")
+					elif response.status_code == 200:
+						print(Colorate.Horizontal(Colors.rainbow, f"               [+] Change - {guild} Successfully !"))
+					elif response.status_code == 429:
+						re = response.json()['retry_after']
+						print(Colorate.Horizontal(Colors.rainbow, f"               [-] RateLimited For - {re}"), end="\r")
+						time.sleep(float(re))
+					else:
+						print(response,response.json())
+				change(guild,token,name)
+				time.sleep(3)
+				clientattack()
+			except:
+				print()
+				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
+				time.sleep(2)
+				clientattack()
+		
+		
 	
 
 def botattack():
